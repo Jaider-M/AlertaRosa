@@ -1,0 +1,3 @@
+# Pyrefly Configuration
+# Specifies the Python interpreter in the local virtual environment for accurate type checking and import resolution.
+python-interpreter-path = "../.venv/bin/python3"
