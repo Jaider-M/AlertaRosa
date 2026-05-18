@@ -1,0 +1,32 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Environments / IDEs
+.venv/
+.vscode/
+.idea/
+*.sw?
+
+# Node / Frontend dependencies and builds
+**/node_modules/
+Frontend/dist/
+Frontend/build/
+.pnpm-store/
+pnpm-lock.yaml
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Python / Backend caches and virtualenvs
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+Backend/uploads/
