@@ -8,14 +8,19 @@ from app.models.clinical import DiagnosticRecord, Alert
 async def init_db():
     # Create Motor client
     client = AsyncIOMotorClient(settings.MONGODB_URI)
+
+    db = client.get_database(settings.DATABASE_NAME)
     
-    # Init beanie with the Document class models
-    await init_beanie(
-        database=client[settings.DATABASE_NAME],
-        document_models=[
-            User,
-            PatientDemographics,
-            DiagnosticRecord,
-            Alert
-        ]
-    )
+    try:
+        await init_beanie(
+            database=db,
+            document_models=[
+                User,
+                PatientDemographics,
+                DiagnosticRecord,
+                Alert
+            ]
+        )
+    except Exception as e:
+        print(f" ERROR CRÍTICO al inicializar las colecciones de Beanie: {str(e)}")
+        raise e
