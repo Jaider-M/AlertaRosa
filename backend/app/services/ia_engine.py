@@ -25,9 +25,9 @@ class MedicalIAEngine:
         
         if self.weights_path.exists():
             self.model.load_state_dict(torch.load(self.weights_path, map_location=self.device, weights_only=True))
-            print(f"🧠 [AlertaRosa AI] Pesos cargados con éxito desde {self.weights_path}")
+            print(f" [AlertaRosa AI] Pesos cargados con éxito desde {self.weights_path}")
         else:
-            print(f"⚠️ [AlertaRosa AI] Archivo de pesos NO encontrado en: {self.weights_path}. El modelo usará inicialización aleatoria.")
+            print(f" [AlertaRosa AI] Archivo de pesos NO encontrado en: {self.weights_path}. El modelo usará inicialización aleatoria.")
             
         self.model.to(self.device)
         self.model.eval() # Desactivar Dropout y BatchNorm para inferencia estable
