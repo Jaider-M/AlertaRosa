@@ -1,4 +1,4 @@
-import { ref, readonly, onMounted } from 'vue';
+import { ref, readonly } from 'vue';
 import type { User, RegisterData } from '../types';
 import { initializeDemoUsers } from '../utils/initDemoUsers';
 
@@ -6,18 +6,20 @@ import { initializeDemoUsers } from '../utils/initDemoUsers';
 const user = ref<User | null>(null);
 const loading = ref<boolean>(true);
 
-export function useAuth() {
-  onMounted(() => {
-    // Only initialize once if it's already running
-    if (loading.value) {
-      initializeDemoUsers();
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        user.value = JSON.parse(storedUser);
-      }
-      loading.value = false;
+export function initAuth() {
+  if (loading.value) {
+    initializeDemoUsers();
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      user.value = JSON.parse(storedUser);
     }
-  });
+    loading.value = false;
+  }
+}
+
+export function useAuth() {
+  // Ensure it's initialized when used in components if not done by router yet
+  initAuth();
 
   const login = (email: string, password: string): boolean => {
     const usersData = localStorage.getItem('users');
