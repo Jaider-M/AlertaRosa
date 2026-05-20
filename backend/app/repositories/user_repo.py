@@ -12,12 +12,11 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
         return await self.model.find_one(self.model.email == email)
 
     async def create(self, obj_in: UserCreate) -> User:
-        db_obj = User(
-            username=obj_in.username,
-            email=obj_in.email,
-            hashed_password=get_password_hash(obj_in.password),
-            role=obj_in.role
-        )
+        user_data = obj_in.model_dump()
+        plain_password = user_data.pop("password")
+        user_data["hashed_password"] = get_password_hash(plain_password)
+        db_obj = User(**user_data)
+        
         return await db_obj.insert()
 
 user_repo = UserRepository(User)

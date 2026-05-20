@@ -17,16 +17,20 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await self.model.find_all().skip(skip).limit(limit).to_list()
 
     async def create(self, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = obj_in.dict()
+        # Corregido: .dict() cambiado por .model_dump() de Pydantic v2
+        obj_in_data = obj_in.model_dump()
         db_obj = self.model(**obj_in_data)
         return await db_obj.insert()
 
     async def update(self, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]) -> ModelType:
-        obj_data = db_obj.dict()
+        # Corregido: .dict() cambiado por .model_dump()
+        obj_data = db_obj.model_dump()
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
-            update_data = obj_in.dict(exclude_unset=True)
+            # Corregido: exclude_unset=True se mantiene dentro de model_dump()
+            update_data = obj_in.model_dump(exclude_unset=True)
+            
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])

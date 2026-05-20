@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone # <-- Añadimos timezone
 from enum import Enum
 from beanie import Document, Indexed
 from pydantic import Field, EmailStr
@@ -14,7 +14,8 @@ class User(Document):
     hashed_password: str
     role: UserRole
     is_active: bool = Field(default=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "users"
