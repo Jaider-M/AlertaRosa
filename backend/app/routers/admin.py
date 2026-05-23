@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.deps import require_role
 from app.models.auth import User, UserRole
-from app.models.specialist import SpecialistProfile
 from beanie import PydanticObjectId
 
 router = APIRouter(prefix="/admin", tags=["Administrador"])
@@ -10,19 +9,16 @@ router = APIRouter(prefix="/admin", tags=["Administrador"])
 async def list_specialists(
     current_user: User = Depends(require_role([UserRole.ADMIN]))
 ):
-
-    specialists = await SpecialistProfile.find_all(fetch_links=True).to_list()
+    specialists = await User.find(User.role == UserRole.SPECIALIST).to_list()
     
     return [
         {
-            "id": str(spec.id),
-            "nombre": spec.nombre_completo,
-            "correo": spec.user.email if spec.user else "N/A",
-            "especialidad": spec.especialidad,
-            "registro_medico": spec.registro_medico,
-            "is_active": spec.user.is_active if spec.user else False
+            "id": str(user.id),
+            "nombre": user.username, 
+            "correo": user.email,
+            "is_active": user.is_active
         }
-        for spec in specialists
+        for user in specialists
     ]
 
 @router.patch("/users/{id}/toggle-active")
