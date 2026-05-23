@@ -9,7 +9,8 @@ from app.main import app
 from app.core.config import settings
 from app.models.auth import User, UserRole
 from app.models.patient import PatientDemographics
-from app.models.clinical import DiagnosticRecord, Alert
+from app.models.specialist import SpecialistProfile
+from app.models.clinical import DiagnosticRecord, Alert, Consultation
 from app.core.security import get_password_hash
 
 # Configurar DB de pruebas
@@ -27,14 +28,16 @@ async def db_setup() -> AsyncGenerator:
     client = AsyncIOMotorClient(test_settings.MONGODB_URI)
     await init_beanie(
         database=client[test_settings.DATABASE_NAME],
-        document_models=[User, PatientDemographics, DiagnosticRecord, Alert]
+        document_models=[User, SpecialistProfile, PatientDemographics, DiagnosticRecord, Alert, Consultation]
     )
     
     # Limpiar BD antes de tests
     await User.delete_all()
+    await SpecialistProfile.delete_all()
     await PatientDemographics.delete_all()
     await DiagnosticRecord.delete_all()
     await Alert.delete_all()
+    await Consultation.delete_all()
 
     # Crear usuario Admin por defecto para tests
     admin_user = User(

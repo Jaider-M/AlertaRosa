@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.models.auth import User, UserRole
 from app.models.specialist import SpecialistProfile
 from app.models.patient import PatientDemographics
-from app.models.clinical import DiagnosticRecord, Alert
+from app.models.clinical import DiagnosticRecord, Alert, Consultation
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,7 +25,8 @@ async def seed_database():
             SpecialistProfile,
             PatientDemographics,
             DiagnosticRecord,
-            Alert
+            Alert,
+            Consultation
         ]
     )
     print(" [AlertaRosa DB] Colecciones mapeadas e índices creados en MongoDB.")

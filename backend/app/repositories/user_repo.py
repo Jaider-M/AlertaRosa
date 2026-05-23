@@ -13,6 +13,12 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
 
     async def create(self, obj_in: UserCreate) -> User:
         user_data = obj_in.model_dump()
+        # Filtrar campos que pertenecen a los perfiles automáticos
+        for profile_field in [
+            "medical_record_number", "full_name", "date_of_birth", "phone", "address",
+            "nombre_completo", "especialidad", "registro_medico"
+        ]:
+            user_data.pop(profile_field, None)
         plain_password = user_data.pop("password")
         user_data["hashed_password"] = get_password_hash(plain_password)
         db_obj = User(**user_data)

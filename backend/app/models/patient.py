@@ -10,6 +10,7 @@ class PatientDemographics(Document):
     date_of_birth: date 
     phone: str = Field(..., max_length=20)
     address: str = Field(..., max_length=150)
+    prioridad: str = Field(default="Baja")
     
     class Settings:
         name = "patients"

@@ -54,6 +54,21 @@ async def upload_diagnostic_image(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail=str(e)
         )
+        
+    # Regla de Negocio Crítica (Prioridad por IA)
+    birads = ai_result.birads_classification
+    if "BI-RADS 4" in birads or "BI-RADS 5" in birads:
+        prioridad = "Alta"
+    elif "BI-RADS 3" in birads:
+        prioridad = "Media"
+    elif "BI-RADS 1" in birads or "BI-RADS 2" in birads:
+        prioridad = "Baja"
+    else:
+        prioridad = "Baja"
+        
+    patient.prioridad = prioridad
+    await patient.save()
+
     patient_diagnostics = await diagnostic_repo.get_by_patient_id(str(patient.id))
     
     if patient_diagnostics:

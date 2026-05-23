@@ -62,3 +62,51 @@ async def update_patient(
         
     updated_patient = await patient_repo.update(patient, patient_in)
     return updated_patient
+
+from app.models.clinical import DiagnosticRecord
+
+@router.get("/doctor/my-patients", status_code=status.HTTP_200_OK)
+async def get_doctor_patients(
+    current_user: User = Depends(require_role([UserRole.SPECIALIST, UserRole.ADMIN]))
+):
+    """
+    Retorna la lista de pacientes que tienen registros de diagnóstico con este médico,
+    ordenados de forma descendente por prioridad (Alta -> Media -> Baja).
+    """
+    diagnostics = await DiagnosticRecord.find(
+        DiagnosticRecord.especialista_id == str(current_user.id)
+    ).find_all(fetch_links=True).to_list()
+    
+    seen_patient_ids = set()
+    my_patients = []
+    for diag in diagnostics:
+        if diag.patient and diag.patient.id not in seen_patient_ids:
+            seen_patient_ids.add(diag.patient.id)
+            my_patients.append(diag.patient)
+            
+    priority_order = {"Alta": 0, "Media": 1, "Baja": 2}
+    my_patients.sort(key=lambda p: priority_order.get(getattr(p, "prioridad", "Baja"), 2))
+    
+    return my_patients
+
+@router.get("/me/history", status_code=status.HTTP_200_OK)
+async def get_my_history(
+    current_user: User = Depends(require_role([UserRole.PATIENT]))
+):
+    """
+    Retorna cronológicamente todos los DiagnosticRecord del paciente autenticado.
+    """
+    patient = await patient_repo.get_by_user_id(str(current_user.id))
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil de paciente no encontrado para el usuario actual."
+        )
+        
+    records = await DiagnosticRecord.find(
+        {"patient.$id": patient.id}
+    ).to_list()
+    
+    records.sort(key=lambda r: r.created_at)
+    
+    return records

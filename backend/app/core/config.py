@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api"
     
     # SECURITY
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     
     # DATABASE
@@ -19,14 +19,13 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads/medical_images"
 
     model_config = SettingsConfigDict(
-        env_file=".env", 
+        env_file=(".env", "../.env"),  
         env_file_encoding="utf-8",
-        case_sensitive=True,  # Mantiene la distinción entre mayúsculas y minúsculas
-        extra="ignore"        # Ignora variables extrañas en el .env que no uses aquí
+        case_sensitive=True,  
+        extra="ignore"        
     )
 
 
 settings = Settings()
-
 
 

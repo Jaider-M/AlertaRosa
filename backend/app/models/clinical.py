@@ -58,3 +58,13 @@ class Alert(Document):
 
     class Settings:
         name = "alerts"
+
+class Consultation(Document):
+    patient: Link[PatientDemographics]
+    doctor: Link[User]
+    fecha_hora: datetime
+    motivo: str = Field(..., min_length=3, max_length=500)
+    status: str = Field(default="Programada", description="Programada, Completada, Cancelada")
+
+    class Settings:
+        name = "consultations"

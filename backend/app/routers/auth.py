@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from pydantic import BaseModel 
@@ -7,6 +7,9 @@ from app.core.config import settings
 from app.core.security import create_access_token, verify_password
 from app.schemas.user import UserCreate, UserResponse
 from app.repositories.user_repo import user_repo
+from app.models.auth import UserRole
+from app.models.patient import PatientDemographics
+from app.models.specialist import SpecialistProfile
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
@@ -30,6 +33,30 @@ async def register(user_in: UserCreate):
         )
     
     user = await user_repo.create(user_in)
+    
+    if user.role == UserRole.PATIENT:
+        patient_data = {
+            "user": user,
+            "medical_record_number": user_in.medical_record_number or f"HC-{user.username.upper()}-{str(user.id)[-6:]}",
+            "full_name": user_in.full_name or user.username,
+            "date_of_birth": user_in.date_of_birth or date(1900, 1, 1),
+            "phone": user_in.phone or "000000000",
+            "address": user_in.address or "Pendiente",
+            "prioridad": "Baja"
+        }
+        patient_profile = PatientDemographics(**patient_data)
+        await patient_profile.insert()
+        
+    elif user.role == UserRole.SPECIALIST:
+        specialist_data = {
+            "user": user,
+            "nombre_completo": user_in.nombre_completo or f"Dr. {user.username.capitalize()}",
+            "especialidad": user_in.especialidad or "Mastología",
+            "registro_medico": user_in.registro_medico or f"RM-{user.username.upper()}-{str(user.id)[-6:]}"
+        }
+        specialist_profile = SpecialistProfile(**specialist_data)
+        await specialist_profile.insert()
+        
     return user
 
 @router.post("/login", response_model=Token)

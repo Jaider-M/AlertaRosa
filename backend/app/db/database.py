@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.models.auth import User
 from app.models.specialist import SpecialistProfile
 from app.models.patient import PatientDemographics
-from app.models.clinical import DiagnosticRecord, Alert
+from app.models.clinical import DiagnosticRecord, Alert, Consultation
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -26,7 +26,8 @@ async def init_db():
                 SpecialistProfile,
                 PatientDemographics,
                 DiagnosticRecord,
-                Alert
+                Alert,
+                Consultation
             ]
         )
         logger.info(" Base de datos conectada: Beanie inicializó los 5 modelos correctamente.")

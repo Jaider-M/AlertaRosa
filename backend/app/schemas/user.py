@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import date
 from pydantic import BaseModel, EmailStr, Field
 from app.models.auth import UserRole
 
@@ -7,6 +8,18 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., description="Correo electrónico institucional o personal")
     password: str = Field(..., min_length=8, max_length=100, description="Contraseña segura (mínimo 8 caracteres)")
     role: UserRole = Field(..., description="Rol asignado en el sistema (ADMIN, SPECIALIST, PATIENT)")
+
+    # Campos opcionales para creación automática de PatientDemographics
+    medical_record_number: Optional[str] = None
+    full_name: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+
+    # Campos opcionales para creación automática de SpecialistProfile
+    nombre_completo: Optional[str] = None
+    especialidad: Optional[str] = None
+    registro_medico: Optional[str] = None
 
     class Config:
         json_schema_extra = {
