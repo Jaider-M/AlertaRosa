@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from datetime import datetime, timezone # <-- Añadimos timezone
-=======
 from datetime import datetime, timezone
->>>>>>> develop
 from enum import Enum
 from typing import Optional
 from beanie import Document, Indexed, Link, PydanticObjectId
@@ -21,10 +17,6 @@ class User(Document):
     hashed_password: str
     role: UserRole
     is_active: bool = Field(default=True)
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:

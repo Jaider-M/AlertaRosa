@@ -1,24 +1,13 @@
 import asyncio
-<<<<<<< HEAD
-import certifi # <-- Agregado para asegurar el apretón de manos SSL
-=======
 import certifi 
->>>>>>> develop
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from passlib.context import CryptContext
 
 from app.core.config import settings
-<<<<<<< HEAD
-from app.models.auth import User, UserRole
-from app.models.specialist import SpecialistProfile
-from app.models.patient import PatientDemographics
-from app.models.clinical import DiagnosticRecord, Alert, Consultation
-=======
 from app.models.auth import User, UserRole, SpecialistProfile  
 from app.models.patient import PatientDemographics
 from app.models.clinical import DiagnosticRecord, Alert, Consultation 
->>>>>>> develop
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -27,11 +16,6 @@ async def seed_database():
     
     client = AsyncIOMotorClient(settings.MONGODB_URI, tlsCAFile=certifi.where())
     db = client[settings.DATABASE_NAME]
-    
-<<<<<<< HEAD
-=======
-    # Inicializamos Beanie con TODOS los modelos para evitar discrepancias de mapeo
->>>>>>> develop
     await init_beanie(
         database=db,
         document_models=[
@@ -44,27 +28,15 @@ async def seed_database():
         ]
     )
     print(" [AlertaRosa DB] Colecciones mapeadas e índices creados en MongoDB.")
-
-<<<<<<< HEAD
-    admin_exist = await User.find_one(User.email == "admin@alertarosa.com")
-    
-    if not admin_exist:
-        print("🔍 [AlertaRosa DB] No se detectó administrador. Creando cuenta raíz de auditoría...")
-=======
     # Verificamos si ya existe el Administrador raíz
     admin_exist = await User.find_one(User.email == "admin@alertarosa.com")
     
     if not admin_exist:
         print(" [AlertaRosa DB] No se detectó administrador. Creando cuenta raíz de auditoría...")
->>>>>>> develop
         
         admin_user = User(
             username="admin_alerta_rosa",
             email="admin@alertarosa.com",
-<<<<<<< HEAD
-=======
-            # Hashing seguro para la contraseña base
->>>>>>> develop
             hashed_password=pwd_context.hash("AdminAlertaRosa2026*"), 
             role=UserRole.ADMIN, 
             is_active=True
@@ -75,12 +47,7 @@ async def seed_database():
         print("  Credenciales: admin@alertarosa.com | Contraseña: AdminAlertaRosa2026*")
         print("=========================================================================")
     else:
-<<<<<<< HEAD
-        print(" [AlertaRosa DB] El usuario administrador ya existe. Omitiendo inserción.")
-=======
         print("ℹ [AlertaRosa DB] El usuario administrador ya existe. Omitiendo inserción.")
->>>>>>> develop
-
     print(" [AlertaRosa DB] Base de datos completamente lista para producción o desarrollo local.")
 
 if __name__ == "__main__":

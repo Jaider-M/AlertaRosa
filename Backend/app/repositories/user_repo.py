@@ -1,9 +1,10 @@
+from app.core.security import get_password_hash
 from typing import Optional
 from app.repositories.base import BaseRepository
 from app.models.auth import User, UserRole, SpecialistProfile 
 from app.models.patient import PatientDemographics
 from app.schemas.user import UserCreate, UserUpdate
-from app.security import get_password_hash 
+
 
 class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
     async def get_by_username(self, username: str) -> Optional[User]:
@@ -13,21 +14,6 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
         return await self.model.find_one(self.model.email == email)
 
     async def create(self, obj_in: UserCreate) -> User:
-<<<<<<< HEAD
-        user_data = obj_in.model_dump()
-        # Filtrar campos que pertenecen a los perfiles automáticos
-        for profile_field in [
-            "medical_record_number", "full_name", "date_of_birth", "phone", "address",
-            "nombre_completo", "especialidad", "registro_medico"
-        ]:
-            user_data.pop(profile_field, None)
-        plain_password = user_data.pop("password")
-        user_data["hashed_password"] = get_password_hash(plain_password)
-        db_obj = User(**user_data)
-        
-        return await db_obj.insert()
-
-=======
         db_user = User(
             username=obj_in.username,
             email=obj_in.email,
@@ -70,6 +56,4 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
 
     async def get_all_specialists(self):
         return await SpecialistProfile.find_all().to_list()
-
->>>>>>> develop
 user_repo = UserRepository(User)

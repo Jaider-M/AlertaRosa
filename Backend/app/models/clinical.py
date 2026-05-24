@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 from beanie import Replace
->>>>>>> develop
 from datetime import datetime, timezone
 from enum import Enum
 from typing import List, Optional
@@ -39,11 +36,7 @@ class MedicalValidation(BaseModel):
 
 class DiagnosticRecord(Document):
     patient: Link[PatientDemographics]
-<<<<<<< HEAD
-    especialista_id: str = Field(..., description="ID del médico especialista asignado")
-=======
     especialista: Link[User]
->>>>>>> develop
     consultation_id: Optional[str] = Field(None, description="Vínculo opcional a la consulta médica")
     images: List[DiagnosticImage] = Field(default=[])
     ai_results: List[AIResult] = Field(default=[])
@@ -51,13 +44,10 @@ class DiagnosticRecord(Document):
     status: str = Field(default="Pendiente", description="Pendiente, En Revisión, Completado")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-<<<<<<< HEAD
-=======
 
     @before_event([Replace, Save, Update])
     async def update_timestamp(self):
         self.updated_at = datetime.now(timezone.utc)
->>>>>>> develop
 
     class Settings:
         name = "diagnostics"
@@ -76,18 +66,11 @@ class Alert(Document):
 
 class Consultation(Document):
     patient: Link[PatientDemographics]
-<<<<<<< HEAD
-    doctor: Link[User]
-    fecha_hora: datetime
-    motivo: str = Field(..., min_length=3, max_length=500)
-    status: str = Field(default="Programada", description="Programada, Completada, Cancelada")
-=======
     doctor: Link[User]  # Vinculado a la cuenta del especialista
     fecha_hora: datetime = Field(..., description="Fecha y hora exacta de la cita")
     motivo: str = Field(..., min_length=5, max_length=300, description="Motivo de la consulta")
     status: str = Field(default="Programada", description="Programada, Completada, Cancelada")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
->>>>>>> develop
 
     class Settings:
         name = "consultations"

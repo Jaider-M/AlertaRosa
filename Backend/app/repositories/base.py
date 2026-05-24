@@ -17,29 +17,10 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await self.model.find_all().skip(skip).limit(limit).to_list()
 
     async def create(self, obj_in: CreateSchemaType) -> ModelType:
-<<<<<<< HEAD
-        # Corregido: .dict() cambiado por .model_dump() de Pydantic v2
-=======
->>>>>>> develop
         obj_in_data = obj_in.model_dump()
         db_obj = self.model(**obj_in_data)
         return await db_obj.insert()
 
-<<<<<<< HEAD
-    async def update(self, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]) -> ModelType:
-        # Corregido: .dict() cambiado por .model_dump()
-        obj_data = db_obj.model_dump()
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            # Corregido: exclude_unset=True se mantiene dentro de model_dump()
-            update_data = obj_in.model_dump(exclude_unset=True)
-            
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        return await db_obj.save()
-=======
     async def update(
         self, 
         db_obj: ModelType, 
@@ -55,7 +36,6 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await db_obj.update({"$set": update_data})
             
         return await self.get(db_obj.id)
->>>>>>> develop
 
     async def remove(self, id: Union[PydanticObjectId, str, Any]) -> Optional[ModelType]:
         """Elimina un documento por su ID y lo retorna."""
