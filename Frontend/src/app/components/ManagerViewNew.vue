@@ -5,6 +5,10 @@ import type { User, UserRole } from '../types';
 import { useAuth } from '../composables/useAuth';
 import Analytics from './Analytics.vue';
 import logoImg from '../../imports/AlertaRosa.jpeg';
+<<<<<<< HEAD
+=======
+import axios from 'axios';
+>>>>>>> develop
 
 type Tab = 'users' | 'analytics';
 
@@ -32,16 +36,45 @@ const tabs = [
   { id: 'analytics' as Tab, label: 'Analíticas', icon: BarChart3 },
 ];
 
+<<<<<<< HEAD
 const loadUsers = () => {
   const usersData = localStorage.getItem('users');
   const allUsers: User[] = usersData ? JSON.parse(usersData) : [];
   users.value = allUsers.filter((u) => u.role !== 'manager');
+=======
+const loadUsers = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Llamada al backend
+    const response = await axios.get('http://127.0.0.1:8000/api/admin/all-users', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    // Mapeo correcto de los datos que vienen de MongoDB a tu tipo 'User'
+    users.value = response.data.map((u: any) => ({
+      id: u.id,
+      name: u.username, // Ajusta según el campo que llega del backend
+      email: u.email,
+      // Traducción de los roles de la base de datos a los que espera tu frontend
+      role: u.role === 'Administrador' ? 'manager' : 
+            u.role === 'Especialista' ? 'doctor' : 'patient',
+      is_active: u.is_active
+    }));
+    
+  } catch (error) {
+    console.error("Error al cargar usuarios desde el servidor:", error);
+    // Opcional: mostrar un aviso al usuario
+    alert("No se pudieron cargar los usuarios. Revisa tu conexión.");
+  }
+>>>>>>> develop
 };
 
 onMounted(() => {
   loadUsers();
 });
 
+<<<<<<< HEAD
 const deleteUser = (userId: string) => {
   if (confirm('¿Está seguro de eliminar este usuario?')) {
     const usersData = localStorage.getItem('users');
@@ -50,6 +83,24 @@ const deleteUser = (userId: string) => {
     localStorage.setItem('users', JSON.stringify(updatedUsers));
     loadUsers();
     selectedUser.value = null;
+=======
+const deleteUser = async (userId: string) => {
+  if (confirm('¿Está seguro de eliminar este usuario de la base de datos?')) {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://127.0.0.1:8000/api/admin/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Si la petición tuvo éxito, recargamos la lista desde el servidor
+      await loadUsers(); 
+      selectedUser.value = null;
+      alert("Usuario eliminado con éxito");
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+      alert("No se pudo eliminar el usuario");
+    }
+>>>>>>> develop
   }
 };
 
@@ -75,6 +126,7 @@ const handleCreateUser = () => {
   selectedUser.value = null;
 };
 
+<<<<<<< HEAD
 const handleSaveUser = () => {
   const usersData = localStorage.getItem('users');
   const allUsers = usersData ? JSON.parse(usersData) : [];
@@ -116,6 +168,43 @@ const handleSaveUser = () => {
     isCreateMode.value = false;
   }
   loadUsers();
+=======
+const handleSaveUser = async () => {
+  if (!selectedUser.value) return;
+  
+  try {
+    const token = localStorage.getItem('token');
+
+    // Mapeo de valores de Frontend a Backend
+    const roleMap: Record<string, string> = {
+      'manager': 'Administrador',
+      'doctor': 'Especialista',
+      'patient': 'Paciente'
+    };
+
+    const payload = {
+      username: formData.value.email, // Ajusta si necesitas enviar 'name'
+      email: formData.value.email,
+      role: roleMap[formData.value.role] || 'Paciente', // <--- AQUÍ ESTÁ LA MAGIA
+      nombre_completo: formData.value.name,
+      phone: formData.value.phone,
+      especialidad: formData.value.specialization
+    };
+
+    await axios.put(
+      `http://127.0.0.1:8000/api/admin/users/${selectedUser.value.id}`, 
+      payload, 
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    alert("Usuario actualizado correctamente");
+    isEditMode.value = false;
+    await loadUsers();
+  } catch (error: any) {
+    console.error("Detalle del error:", JSON.stringify(error.response?.data, null, 2));
+    alert("Error al actualizar. Revisa la consola.");
+  }
+>>>>>>> develop
 };
 
 const handleCancel = () => {

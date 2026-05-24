@@ -1,17 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
+<<<<<<< HEAD
 import { useAuth, initAuth } from '../app/composables/useAuth'
 
+=======
+>>>>>>> develop
 import Auth from '../app/components/Auth.vue'
 import DoctorView from '../app/components/DoctorView.vue'
 import PatientViewNew from '../app/components/PatientViewNew.vue'
 import ManagerViewNew from '../app/components/ManagerViewNew.vue'
 import Dashboard from '../app/components/Dashboard.vue'
+<<<<<<< HEAD
 import Analytics from '../app/components/Analytics.vue'
 import DiagnosisModule from '../app/components/DiagnosisModule.vue'
 import Education from '../app/components/Education.vue'
 import PatientAlerts from '../app/components/PatientAlerts.vue'
 import PatientManagement from '../app/components/PatientManagement.vue'
 import SymptomTriage from '../app/components/SymptomTriage.vue'
+=======
+>>>>>>> develop
 
 const routes = [
   { path: '/', redirect: '/auth' },
@@ -19,6 +25,7 @@ const routes = [
   { path: '/doctor', name: 'DoctorView', component: DoctorView, meta: { requiresAuth: true, role: 'doctor' } },
   { path: '/patient', name: 'PatientView', component: PatientViewNew, meta: { requiresAuth: true, role: 'patient' } },
   { path: '/manager', name: 'ManagerView', component: ManagerViewNew, meta: { requiresAuth: true, role: 'manager' } },
+<<<<<<< HEAD
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: Analytics, meta: { requiresAuth: true } },
   { path: '/diagnosis', name: 'DiagnosisModule', component: DiagnosisModule, meta: { requiresAuth: true } },
@@ -26,6 +33,9 @@ const routes = [
   { path: '/patient-alerts', name: 'PatientAlerts', component: PatientAlerts, meta: { requiresAuth: true } },
   { path: '/patient-management', name: 'PatientManagement', component: PatientManagement, meta: { requiresAuth: true } },
   { path: '/symptom-triage', name: 'SymptomTriage', component: SymptomTriage, meta: { requiresAuth: true } }
+=======
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } }
+>>>>>>> develop
 ]
 
 const router = createRouter({
@@ -33,6 +43,7 @@ const router = createRouter({
   routes
 })
 
+<<<<<<< HEAD
 router.beforeEach((to, from, next) => {
   // Ensure authentication state is initialized before checking routes
   initAuth()
@@ -55,3 +66,20 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+=======
+router.beforeEach((to) => {
+  const token = localStorage.getItem('token')
+  const role = localStorage.getItem('role')
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth === true)
+
+  if (requiresAuth && !token) return { name: 'Auth' }
+
+  if (to.name === 'Auth' && token) {
+    if (role === 'patient') return { name: 'PatientView' }
+    if (role === 'manager') return { name: 'ManagerView' }
+    return { name: 'DoctorView' }
+  }
+})
+
+export default router
+>>>>>>> develop
