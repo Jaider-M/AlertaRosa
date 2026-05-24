@@ -24,4 +24,5 @@ export interface RegisterData {
   role: UserRole;
   phone?: string;
   specialization?: string;
+  registro_medico?: string;
 }

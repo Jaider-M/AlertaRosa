@@ -25,28 +25,35 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             if obj_in.role == UserRole.PATIENT:
                 patient_profile = PatientDemographics(
                     user=db_user, 
-                    medical_record_number=obj_in.medical_record_number,
-                    full_name=obj_in.full_name,
-                    date_of_birth=obj_in.date_of_birth,
-                    phone=obj_in.phone,
-                    address=obj_in.address,
+                    medical_record_number=obj_in.medical_record_number or "N/A",
+                    full_name=obj_in.full_name or "Sin nombre",
+                    date_of_birth=obj_in.date_of_birth, 
+                    phone=obj_in.phone or "0000000000",
+                    address=obj_in.address or "Sin dirección",
                     prioridad="Baja" 
                 )
                 await patient_profile.insert()
 
             elif obj_in.role == UserRole.SPECIALIST:
-                specialist_profile = SpecialistProfile(
-                    user=db_user,
-                    nombre_completo=obj_in.nombre_completo,
-                    especialidad=obj_in.especialidad,
-                    registro_medico=obj_in.registro_medico
-                )
-                await specialist_profile.insert()
+                if obj_in.nombre_completo and obj_in.especialidad:
+                    specialist_profile = SpecialistProfile(
+                        user=db_user,
+                        nombre_completo=obj_in.nombre_completo,
+                        especialidad=obj_in.especialidad,
+                        registro_medico=obj_in.registro_medico or "Pendiente"
+                    )
+                    await specialist_profile.insert()
             
             return db_user
 
         except Exception as e:
             await db_user.delete()
             raise e
+
+    async def get_all_patients(self):
+        return await PatientDemographics.find_all().to_list()
+
+    async def get_all_specialists(self):
+        return await SpecialistProfile.find_all().to_list()
 
 user_repo = UserRepository(User)
