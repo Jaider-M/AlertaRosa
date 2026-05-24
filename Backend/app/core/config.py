@@ -8,11 +8,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api"
     
     # SECURITY
-    SECRET_KEY: str 
-<<<<<<< HEAD
-=======
-    ALGORITHM: str = "HS256"  
->>>>>>> develop
+    SECRET_KEY: str  
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     
     # DATABASE
@@ -21,20 +17,6 @@ class Settings(BaseSettings):
     
     # IA UPLOADS
     UPLOAD_DIR: str = "uploads/medical_images"
-<<<<<<< HEAD
-
-    model_config = SettingsConfigDict(
-        env_file=(".env", "../.env"),  
-        env_file_encoding="utf-8",
-        case_sensitive=True,  
-        extra="ignore"        
-    )
-
-
-settings = Settings()
-
-
-=======
 
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),  
@@ -44,4 +26,3 @@ settings = Settings()
     )
 
 settings = Settings()
->>>>>>> develop

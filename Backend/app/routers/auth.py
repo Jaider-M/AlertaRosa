@@ -2,7 +2,6 @@ from datetime import timedelta, date
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from pydantic import BaseModel 
-
 from app.core.config import settings
 from app.security import create_access_token, verify_password  
 from app.schemas.user import UserCreate, UserResponse
@@ -84,9 +83,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         role=user.role, 
         expires_delta=access_token_expires
     )
-<<<<<<< HEAD
-    return {"access_token": access_token, "token_type": "bearer"}
-=======
 
     return {
         "access_token": access_token, 
@@ -98,4 +94,4 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "role": user.role
         }
     }
->>>>>>> develop
+
