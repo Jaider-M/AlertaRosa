@@ -5,10 +5,7 @@ import type { User, UserRole } from '../types';
 import { useAuth } from '../composables/useAuth';
 import Analytics from './Analytics.vue';
 import logoImg from '../../imports/AlertaRosa.jpeg';
-<<<<<<< HEAD
-=======
 import axios from 'axios';
->>>>>>> develop
 
 type Tab = 'users' | 'analytics';
 
@@ -21,6 +18,7 @@ const filterRole = ref<'all' | 'patient' | 'doctor'>('all');
 const selectedUser = ref<User | null>(null);
 const isEditMode = ref(false);
 const isCreateMode = ref(false);
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 const formData = ref({
   name: '',
@@ -36,18 +34,12 @@ const tabs = [
   { id: 'analytics' as Tab, label: 'Analíticas', icon: BarChart3 },
 ];
 
-<<<<<<< HEAD
-const loadUsers = () => {
-  const usersData = localStorage.getItem('users');
-  const allUsers: User[] = usersData ? JSON.parse(usersData) : [];
-  users.value = allUsers.filter((u) => u.role !== 'manager');
-=======
 const loadUsers = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     
     // Llamada al backend
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/all-users', {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/all-users`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -67,28 +59,17 @@ const loadUsers = async () => {
     // Opcional: mostrar un aviso al usuario
     alert("No se pudieron cargar los usuarios. Revisa tu conexión.");
   }
->>>>>>> develop
 };
 
 onMounted(() => {
   loadUsers();
 });
 
-<<<<<<< HEAD
-const deleteUser = (userId: string) => {
-  if (confirm('¿Está seguro de eliminar este usuario?')) {
-    const usersData = localStorage.getItem('users');
-    const allUsers = usersData ? JSON.parse(usersData) : [];
-    const updatedUsers = allUsers.filter((u: any) => u.id !== userId);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-    loadUsers();
-    selectedUser.value = null;
-=======
 const deleteUser = async (userId: string) => {
   if (confirm('¿Está seguro de eliminar este usuario de la base de datos?')) {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://127.0.0.1:8000/api/admin/users/${userId}`, {
+      const token = localStorage.getItem('access_token');
+      await axios.delete(`${API_BASE_URL}/api/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -100,7 +81,6 @@ const deleteUser = async (userId: string) => {
       console.error("Error al eliminar usuario:", error);
       alert("No se pudo eliminar el usuario");
     }
->>>>>>> develop
   }
 };
 
@@ -126,73 +106,37 @@ const handleCreateUser = () => {
   selectedUser.value = null;
 };
 
-<<<<<<< HEAD
-const handleSaveUser = () => {
-  const usersData = localStorage.getItem('users');
-  const allUsers = usersData ? JSON.parse(usersData) : [];
-
-  if (isEditMode.value && selectedUser.value) {
-    const updatedUsers = allUsers.map((u: any) => {
-      if (u.id === selectedUser.value?.id) {
-        return {
-          ...u,
-          name: formData.value.name,
-          email: formData.value.email,
-          phone: formData.value.phone,
-          role: formData.value.role,
-          specialization: formData.value.specialization,
-          ...(formData.value.password && { password: formData.value.password }),
-        };
-      }
-      return u;
-    });
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-    isEditMode.value = false;
-    selectedUser.value = null;
-  } else if (isCreateMode.value) {
-    if (!formData.value.name || !formData.value.email || !formData.value.password) {
-      alert('Por favor complete todos los campos requeridos');
-      return;
-    }
-    if (allUsers.some((u: any) => u.email === formData.value.email)) {
-      alert('El email ya está registrado');
-      return;
-    }
-    const newUser = {
-      id: `U${Date.now()}`,
-      ...formData.value,
-      registrationDate: new Date().toISOString(),
-    };
-    allUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(allUsers));
-    isCreateMode.value = false;
-  }
-  loadUsers();
-=======
 const handleSaveUser = async () => {
   if (!selectedUser.value) return;
   
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
 
-    // Mapeo de valores de Frontend a Backend
     const roleMap: Record<string, string> = {
       'manager': 'Administrador',
       'doctor': 'Especialista',
       'patient': 'Paciente'
     };
 
-    const payload = {
-      username: formData.value.email, // Ajusta si necesitas enviar 'name'
+    // 1. Construimos el payload básico
+    const payload: any = {
       email: formData.value.email,
-      role: roleMap[formData.value.role] || 'Paciente', // <--- AQUÍ ESTÁ LA MAGIA
-      nombre_completo: formData.value.name,
-      phone: formData.value.phone,
-      especialidad: formData.value.specialization
+      role: roleMap[formData.value.role] || 'Paciente',
+      username: formData.value.name,
     };
 
+    // 2. Solo añadimos campos si tienen contenido válido (>= 3 caracteres)
+    if (formData.value.name && formData.value.name.trim().length >= 3) {
+      payload.nombre_completo = formData.value.name;
+    }
+    
+    if (formData.value.specialization && formData.value.specialization.trim().length >= 3) {
+      payload.especialidad = formData.value.specialization;
+    }
+
+    // 3. Ejecutamos la petición
     await axios.put(
-      `http://127.0.0.1:8000/api/admin/users/${selectedUser.value.id}`, 
+      `${API_BASE_URL}/api/admin/users/${selectedUser.value.id}`, 
       payload, 
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -204,7 +148,6 @@ const handleSaveUser = async () => {
     console.error("Detalle del error:", JSON.stringify(error.response?.data, null, 2));
     alert("Error al actualizar. Revisa la consola.");
   }
->>>>>>> develop
 };
 
 const handleCancel = () => {

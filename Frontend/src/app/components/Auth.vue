@@ -25,31 +25,31 @@ const handleSubmit = async (e: Event) => {
   error.value = '';
 
   try {
+    // 1. Lógica de Login
     if (isLogin.value) {
-      const success = await login(formData.email, formData.password);
-      if (success) {
-        const role = localStorage.getItem('role'); 
-        console.log("Rol detectado en localStorage:", role); 
-
-        if (role === 'doctor') {
-          router.push('/doctor');
-        } else if (role === 'manager') {
-          router.push('/manager');
-        } else {
-
-          router.push('/patient');
-        }
+      const result = await login(formData.email, formData.password);
+      if (result?.access_token) {
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('role', result.role);
+        const target = result.role === 'doctor' ? '/doctor' : 
+                       result.role === 'manager' ? '/manager' : '/patient';
+        window.location.href = target;
+      } else {
+        error.value = 'Credenciales incorrectas.';
       }
-    } else {
+    } 
+    // 2. Lógica de REGISTRO (¡ESTO ES LO QUE FALTABA!)
+    else {
       const success = await register(formData);
       if (success) {
-        isLogin.value = true;
-        alert('Cuenta creada. Por favor, inicia sesión.');
+        alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+        isLogin.value = true; // Cambiamos a la vista de login automáticamente
       } else {
-        error.value = 'Error en el registro. Verifica los campos requeridos.';
+        error.value = 'El registro falló. Verifica los datos.';
       }
     }
   } catch (err) {
+    console.error("Error crítico:", err);
     error.value = 'Error al conectar con el servidor';
   }
 };
