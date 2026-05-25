@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 
 from app.core.config import settings
 from app.models.auth import User, UserRole, SpecialistProfile  
-from app.models.patient import PatientDemographics
+from app.models.patient import Patient
 from app.models.clinical import DiagnosticRecord, Alert, Consultation 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

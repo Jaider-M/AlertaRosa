@@ -14,25 +14,29 @@ audit_logger.addHandler(file_handler)
 
 class AuditMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # 1. Rutas que NO queremos auditar (Auth)
+        excluded_paths = ["/api/auth/login", "/api/auth/register", "/api/auth/logout"]
+        
+        # Si es una ruta de auth, solo la dejamos pasar sin hacer nada más
+        if any(path in request.url.path for path in excluded_paths):
+            return await call_next(request)
+
+        # 2. Lógica de auditoría para rutas protegidas
         start_time = time.time()
         
-        # Extraer información relevante del request
-        method = request.method
-        url = request.url.path
-        client_ip = request.client.host if request.client else "Unknown"
-        
-        # Procesar request
-        response = await call_next(request)
-        
+        try:
+            response = await call_next(request)
+        except Exception as e:
+            # Si el middleware falla en el auth, el error se captura aquí
+            raise e
+            
         process_time = time.time() - start_time
         status_code = response.status_code
         
-        # Solo registrar endpoints confidenciales: pacientes y diagnósticos
-        if "/api/patients" in url or "/api/diagnostics" in url:
-            # En un entorno real se extraería el usuario del request.state o token para saber quién accedió
+        if "/api/patients" in request.url.path or "/api/diagnostics" in request.url.path:
             audit_logger.info(
-                f"AUDIT - Method: {method} - Path: {url} - Status: {status_code} - "
-                f"Client IP: {client_ip} - Duration: {process_time:.4f}s"
+                f"AUDIT - Method: {request.method} - Path: {request.url.path} - Status: {status_code} - "
+                f"Duration: {process_time:.4f}s"
             )
             
         return response

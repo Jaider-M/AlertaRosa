@@ -3,10 +3,7 @@ fastapi>=0.110.0,<0.116.0
 uvicorn>=0.28.0,<0.30.0
 pydantic>=2.6.0,<2.10.0
 pydantic-settings>=2.2.0
-<<<<<<< HEAD
-=======
 aiofiles>=23.2.1
->>>>>>> develop
 
 # --- Base de Datos (Bloqueo de Compatibilidad Crítica) ---
 pymongo>=4.6.0,<4.7.0
@@ -15,13 +12,8 @@ beanie>=1.21.0,<2.0.0
 certifi>=2024.2.2
 
 # --- Seguridad y Autenticación ---
-<<<<<<< HEAD
-passlib[bcrypt]>=1.7.4
-=======
-# Se cambió bcrypt por argon2-cffi para mejorar seguridad y evitar errores de versión
 passlib[argon2]>=1.7.4
 argon2-cffi>=23.1.0
->>>>>>> develop
 python-jose[cryptography]>=3.3.0
 python-multipart>=0.0.9
 email-validator>=2.1.0

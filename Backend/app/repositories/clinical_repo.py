@@ -7,8 +7,9 @@ from app.schemas.diagnostic import DiagnosticCreate, DiagnosticUpdate
 
 class ConsultationRepository(BaseRepository[Consultation, Any, Any]):
     async def get_by_specialist(self, doctor_id: str) -> List[Consultation]:
-        return await self.model.find(
-            {"doctor.$id": PydanticObjectId(doctor_id)},
+        obj_id = PydanticObjectId(doctor_id)
+        return await Consultation.find(
+            Consultation.doctor.id == obj_id, 
             fetch_links=True
         ).to_list()
 

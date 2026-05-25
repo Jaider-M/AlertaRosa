@@ -10,8 +10,6 @@ class UserRole(str, Enum):
     PATIENT = "Paciente"
 
 class User(Document):
-    id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
-    
     username: Indexed(str, unique=True)
     email: Indexed(EmailStr, unique=True)
     hashed_password: str

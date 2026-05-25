@@ -4,9 +4,9 @@ from beanie import Document, Link, Indexed
 from pydantic import Field
 from app.models.auth import User
 
-class PatientDemographics(Document):
+class Patient(Document):
     user: Link[User]
-    medical_record_number: Optional[str] = None 
+    medical_record_number: Optional[str] = None
     full_name: Optional[str] = None
     date_of_birth: Optional[date] = None 
     phone: Optional[str] = None

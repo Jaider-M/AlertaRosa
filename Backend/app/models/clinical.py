@@ -5,7 +5,7 @@ from typing import List, Optional
 from beanie import Document, Link, before_event, Update, Save  # <-- Importamos hooks de Beanie
 from pydantic import BaseModel, Field
 from app.models.auth import User
-from app.models.patient import PatientDemographics
+from app.models.patient import Patient
 
 class RiskLevel(str, Enum):
     LOW = "Bajo"
@@ -35,7 +35,7 @@ class MedicalValidation(BaseModel):
     validated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class DiagnosticRecord(Document):
-    patient: Link[PatientDemographics]
+    patient: Link[Patient]
     especialista: Link[User]
     consultation_id: Optional[str] = Field(None, description="Vínculo opcional a la consulta médica")
     images: List[DiagnosticImage] = Field(default=[])
@@ -53,7 +53,7 @@ class DiagnosticRecord(Document):
         name = "diagnostics"
 
 class Alert(Document):
-    patient: Link[PatientDemographics] 
+    patient: Link[Patient] 
     sender: Link[User]
     priority: AlertPriority
     message: str = Field(..., min_length=5, max_length=500)
@@ -65,7 +65,7 @@ class Alert(Document):
         name = "alerts"
 
 class Consultation(Document):
-    patient: Link[PatientDemographics]
+    patient: Link[Patient]
     doctor: Link[User]  # Vinculado a la cuenta del especialista
     fecha_hora: datetime = Field(..., description="Fecha y hora exacta de la cita")
     motivo: str = Field(..., min_length=5, max_length=300, description="Motivo de la consulta")
