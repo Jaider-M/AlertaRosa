@@ -113,7 +113,7 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 2. **Instala los módulos de Node.js:**
    ```bash
    npm install
-   ```
+```
    *(También puedes utilizar `pnpm install` o `yarn` si lo prefieres).*
 
 ---
@@ -147,5 +147,7 @@ npm run dev
 
 AlertaRosa se ha construido bajo estándares profesionales de protección de datos:
 1. **Ignorado de Datos Sensibles:** La carpeta `Backend/uploads/` y los archivos `.env` están configurados en `.gitignore` para prevenir cualquier filtración de información médica o claves criptográficas a repositorios públicos.
+
 2. **Peticiones Seguras (CORS):** La API cuenta con middlewares de control de orígenes para mitigar riesgos de inyección y suplantación de identidad.
+
 3. **Registro de Auditoría:** El backend mantiene una bitácora automática de accesos para rastrear operaciones sobre la base de datos de pacientes, fundamental en aplicaciones del sector salud.
